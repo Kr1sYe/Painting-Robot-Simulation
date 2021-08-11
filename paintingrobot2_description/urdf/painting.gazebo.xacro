@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<robot name="paintingrobot_sim" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="laser_visual" default="true"/>
+  <xacro:arg name="imu_visual"   default="false"/>
+
+  <gazebo reference="base_link">
+    <material>Gazebo/Orange</material>
+  </gazebo>
+
+  <gazebo reference="lifting_link">
+    <material>Gazebo/Dark</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+
+  <gazebo reference="aubo_base_link">
+    <material>Gazebo/Black</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  <gazebo reference="shoulder_Link">
+    <material>Gazebo/Orange</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  <gazebo reference="upperArm_Link">
+    <material>Gazebo/Orange</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  <gazebo reference="foreArm_Link">
+    <material>Gazebo/Orange</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  <gazebo reference="wrist1_Link">
+    <material>Gazebo/Orange</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  <gazebo reference="wrist2_Link">
+    <material>Gazebo/Orange</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  <gazebo reference="wrist3_Link">
+    <material>Gazebo/Orange</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+  <gazebo reference="endeffector_link">
+    <material>Gazebo/Grey</material>
+    <turnGravityOff>true</turnGravityOff>
+  </gazebo>
+
+  <gazebo reference="wheel_left_link">
+    <mu1>10</mu1>
+    <mu2>10</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo reference="wheel_right_link">
+    <mu1>10</mu1>
+    <mu2>10</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo reference="wheel_front_left_link">
+    <mu1>0.01</mu1>
+    <mu2>0.01</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo reference="wheel_front_right_link">
+    <mu1>0.01</mu1>
+    <mu2>0.01</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo reference="wheel_back_left_link">
+    <mu1>0.01</mu1>
+    <mu2>0.01</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo reference="wheel_back_right_link">
+    <mu1>0.01</mu1>
+    <mu2>0.01</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo reference="imu_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+      <visualize>$(arg imu_visual)</visualize>
+    </sensor>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="paintingrobot_controller" filename="libgazebo_ros_diff_drive.so">
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <odometrySource>world</odometrySource>
+      <publishOdomTF>true</publishOdomTF>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+      <publishWheelTF>false</publishWheelTF>
+      <publishTf>true</publishTf>
+      <publishWheelJointState>true</publishWheelJointState>
+      <legacyMode>false</legacyMode>
+      <updateRate>30</updateRate>
+      <leftJoint>wheel_left_joint</leftJoint>
+      <rightJoint>wheel_right_joint</rightJoint>
+      <wheelSeparation>0.60</wheelSeparation>
+      <wheelDiameter>0.066</wheelDiameter>
+      <wheelAcceleration>1</wheelAcceleration>
+      <wheelTorque>100</wheelTorque>
+      <rosDebugLevel>na</rosDebugLevel>
+    </plugin>
+  </gazebo>
+
+  <!-- <gazebo>
+    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
+      <updateRate>100.0</updateRate>
+      <robotNamespace>/</robotNamespace>
+      <leftFrontJoint>wheel_front_left_joint</leftFrontJoint>
+      <rightFrontJoint>wheel_front_right_joint</rightFrontJoint>
+      <leftRearJoint>wheel_back_left_joint</leftRearJoint>
+      <rightRearJoint>wheel_back_right_joint</rightRearJoint>
+      <wheelSeparation>0.6</wheelSeparation>
+      <wheelDiameter>0.066</wheelDiameter>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <torque>20</torque>
+      <topicName>cmd_vel</topicName>
+      <broadcastTF>true</broadcastTF>
+    </plugin>
+  </gazebo> -->
+
+  <gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>imu_link</bodyName>
+      <frameName>imu_link</frameName>
+      <topicName>imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <updateRate>0</updateRate>
+      <imu>
+        <noise>
+          <type>gaussian</type>
+          <rate>
+            <mean>0.0</mean>
+            <stddev>2e-4</stddev>
+            <bias_mean>0.0000075</bias_mean>
+            <bias_stddev>0.0000008</bias_stddev>
+          </rate>
+          <accel>
+            <mean>0.0</mean>
+            <stddev>1.7e-2</stddev>
+            <bias_mean>0.1</bias_mean>
+            <bias_stddev>0.001</bias_stddev>
+          </accel>
+        </noise>
+      </imu>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="base_scan">
+    <material>Gazebo/FlatBlack</material>
+    <sensor type="ray" name="lds_lfcd_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>$(arg laser_visual)</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.5707</min_angle>
+            <max_angle>1.5707</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.120</min>
+          <max>10.0</max>
+          <resolution>0.015</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_lds_lfcd_controller" filename="libgazebo_ros_laser.so">
+        <topicName>scan</topicName>
+        <frameName>base_scan</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo>
+
+
+</robot>

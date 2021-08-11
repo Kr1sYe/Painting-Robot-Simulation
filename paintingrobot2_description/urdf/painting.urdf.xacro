@@ -1,0 +1,725 @@
+<?xml version="1.0" ?>
+<robot name="paintingrobot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find paintingrobot2_description)/urdf/common_properties.xacro"/>
+  <xacro:include filename="$(find paintingrobot2_description)/urdf/painting.gazebo.xacro"/>
+  <!-- Livox Mid 70 -->
+  <xacro:include filename="$(find paintingrobot2_description)/urdf/sensors/livox_mid70.xacro"/>
+  <!-- Zed camera -->
+  <xacro:include filename="$(find paintingrobot2_description)/urdf/sensors/stereo_camera.urdf.xacro" />
+  <xacro:property name="zed_base_parent" value="base_link" />
+  <xacro:property name="zed_offset_x" value="0.40" />
+  <xacro:property name="zed_offset_y" value="0" />
+  <xacro:property name="zed_offset_z" value="1.29" />
+  <xacro:property name="zed_offset_roll" value="0" />
+  <xacro:property name="zed_offset_pitch" value="0" />
+  <xacro:property name="zed_offset_yaw" value="${0/2}" />
+
+
+  <xacro:macro name="cuboid_inertial" params="length weight hight mass *origin">
+    <inertial>
+      <mass value="${mass}" />
+      <xacro:insert_block name="origin" />
+      <inertia ixx="${0.0833333 * mass * (length * length + hight * hight)}" ixy="0.0" ixz="0.0"
+               iyy="${0.0833333 * mass * ( weight * weight + hight * hight)}" iyz="0.0"
+               izz="${0.0833333 * mass * ( length * length + weight * weight)}" />
+    </inertial>
+  </xacro:macro>
+
+  <link name="base_footprint"/>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0.0 0.0 0.010" rpy="0 0 0"/>
+  </joint>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="-0.032 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/base_link.STL"/>
+      </geometry>
+      <material name="light_black"/>
+    </visual>
+
+    <collision>
+      <origin xyz="-0.032 0 0.070" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/base_link.STL"/>
+      </geometry>
+    </collision>
+
+   <!-- <inertial>
+      <origin
+        xyz="-0.07384 -1.7641E-07 0.46087"
+        rpy="0 0 0" />
+      <mass
+        value="389.17" />
+      <inertia
+        ixx="32.13"
+        ixy="-1.4506E-06"
+        ixz="2.1894"
+        iyy="46.875"
+        iyz="-1.0503E-05"
+        izz="35.59" />
+    </inertial> -->
+    <xacro:cuboid_inertial length="1.2" weight="0.6" hight="1.0" mass="5">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+    </xacro:cuboid_inertial>
+  </link>
+
+  <!-- !!!!!!!!!!!!!!!!!!!!!!!!1 -->
+  <joint name="wheel_left_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_left_link"/>
+    <origin xyz="0.0 0.3 0.023" rpy="-1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="100000" velocity="3.15" />
+  </joint>
+
+  <link name="wheel_left_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/wheels/left_tire.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.018" radius="0.033"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="2.8498940e-02" />
+      <inertia ixx="1.1175580e-05" ixy="-4.2369783e-11" ixz="-5.9381719e-09"
+               iyy="1.1192413e-05" iyz="-1.4400107e-11"
+               izz="2.0712558e-05" />
+      </inertial>
+  </link>
+
+  <joint name="wheel_right_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_right_link"/>
+    <origin xyz="0.0 -0.3 0.023" rpy="-1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="100000" velocity="3.15" />
+  </joint>
+
+  <link name="wheel_right_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/wheels/right_tire.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.018" radius="0.033"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="2.8498940e-02" />
+      <inertia ixx="1.1175580e-05" ixy="-4.2369783e-11" ixz="-5.9381719e-09"
+               iyy="1.1192413e-05" iyz="-1.4400107e-11"
+               izz="2.0712558e-05" />
+      </inertial>
+  </link>
+  <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+
+  <joint name="wheel_front_left_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_front_left_link"/>
+    <origin xyz="0.3 0.3 0.023" rpy="-1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+    <mimic joint="wheel_left_joint" multiplier="1" offset="0" />
+  </joint>
+
+  <link name="wheel_front_left_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/wheels/left_tire.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.018" radius="0.033"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="2.8498940e-02" />
+      <inertia ixx="1.1175580e-05" ixy="-4.2369783e-11" ixz="-5.9381719e-09"
+               iyy="1.1192413e-05" iyz="-1.4400107e-11"
+               izz="2.0712558e-05" />
+      </inertial>
+  </link>
+
+  <joint name="wheel_front_right_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_front_right_link"/>
+    <origin xyz="0.3 -0.3 0.023" rpy="-1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+    <mimic joint="wheel_right_joint" multiplier="1" offset="0" />
+  </joint>
+
+  <link name="wheel_front_right_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/wheels/right_tire.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.018" radius="0.033"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="2.8498940e-02" />
+      <inertia ixx="1.1175580e-05" ixy="-4.2369783e-11" ixz="-5.9381719e-09"
+               iyy="1.1192413e-05" iyz="-1.4400107e-11"
+               izz="2.0712558e-05" />
+      </inertial>
+  </link>
+
+
+  <joint name="wheel_back_left_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_back_left_link"/>
+    <origin xyz="-0.3 0.3 0.023" rpy="-1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+    <mimic joint="wheel_left_joint" multiplier="1" offset="0" />
+  </joint>
+
+  <link name="wheel_back_left_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/wheels/left_tire.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.018" radius="0.033"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="2.8498940e-02" />
+      <inertia ixx="1.1175580e-05" ixy="-4.2369783e-11" ixz="-5.9381719e-09"
+               iyy="1.1192413e-05" iyz="-1.4400107e-11"
+               izz="2.0712558e-05" />
+      </inertial>
+  </link>
+
+  <joint name="wheel_back_right_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_back_right_link"/>
+    <origin xyz="-0.3 -0.3 0.023" rpy="-1.57 0 0"/>
+    <axis xyz="0 0 1"/>
+    <mimic joint="wheel_right_joint" multiplier="1" offset="0" />
+  </joint>
+
+  <link name="wheel_back_right_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/wheels/right_tire.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.018" radius="0.033"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="2.8498940e-02" />
+      <inertia ixx="1.1175580e-05" ixy="-4.2369783e-11" ixz="-5.9381719e-09"
+               iyy="1.1192413e-05" iyz="-1.4400107e-11"
+               izz="2.0712558e-05" />
+      </inertial>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="-0.032 0 0.068" rpy="0 0 0"/>
+  </joint>
+
+  <link name="imu_link"/>
+
+  <joint name="scan_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_scan"/>
+    <!-- <origin xyz="-0.032 0 0.172" rpy="0 0 0"/> -->
+    <origin xyz="0.3875 -0.002 0.172" rpy="0 0 0"/>
+  </joint>
+  <!-- 0.3875 -0.002 0 0 0 3.14159265 -->
+
+  <link name="base_scan">
+    <visual>
+      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://turtlebot3_description/meshes/sensors/lds.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="dark"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0.015 0 -0.0065" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.0315" radius="0.055"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.114" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
+    </inertial>
+  </link>
+
+  <joint
+    name="lifting_joint"
+    type="fixed">
+    <origin
+      xyz="0.17 0 1.20"
+      rpy="1.5708 0 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="lifting_link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-10"
+      upper="10"
+      effort="1000"
+      velocity="1000" />
+  </joint>
+  <link
+    name="lifting_link">
+    <inertial>
+      <origin
+        xyz="3.4694E-18 -0.38094 0"
+        rpy="0 0 0" />
+      <mass
+        value="11.162" />
+      <inertia
+        ixx="0.65932"
+        ixy="-1.2225E-33"
+        ixz="3.1894E-34"
+        iyy="0.027492"
+        iyz="-3.4327E-17"
+        izz="0.65932" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://paintingrobot2_description/meshes/lifting_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://paintingrobot2_description/meshes/lifting_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- arm -->
+  <!-- aubo base_link-->
+  <link name="aubo_base_link">
+    <inertial>
+      <origin xyz="-2.7535E-06 0.00054789 0.02299" rpy="0 0 0" />
+      <mass value="1.2345" />
+      <inertia ixx="0.0029215" ixy="2.2046E-07" ixz="-3.4773E-08" iyy="0.0028546" iyz="-7.6362E-06" izz="0.0051176" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/base_link.DAE" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint
+    name="aubo_base_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="-1.5708  1.5708  0 " />
+    <parent
+      link="lifting_link" />
+    <child
+      link="aubo_base_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <!-- shoulder_Link -->
+
+  <link name="shoulder_Link">
+    <inertial>
+      <origin xyz="0.00029287 0.14173 0.54281" rpy="0 0 0" />
+      <mass value="10.994" />
+      <inertia ixx="2.2088" ixy="-0.00043922" ixz="-0.0025417" iyy="2.1473" iyz="-0.049088" izz="0.07998" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://paintingrobot2_description/meshes/aubo_i10/shoulder_Link.DAE" />
+      </geometry>
+      <material name="">
+        <color rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/shoulder_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- shoulder_joint -->
+
+  <joint name="shoulder_joint" type="revolute">
+    <origin xyz="0 0 0.1632" rpy="-8.7138E-17 -4.3534E-32 3.1416" />
+    <parent link="aubo_base_link" />
+    <child link="shoulder_Link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.05" upper="3.05" effort="100000" velocity="3.15" />
+  </joint>
+
+  <!-- upperArm_Link -->
+
+  <link name="upperArm_Link">
+    <inertial>
+      <origin xyz="0.31908 -3.7071E-06 -0.0042956" rpy="0 0 0" />
+      <mass value="5.3139" />
+      <inertia ixx="0.0095171" ixy="7.2849E-06" ixz="-6.7014E-06" iyy="0.11411" iyz="-1.1529E-06" izz="0.11411" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/upperArm_Link.DAE" />
+      </geometry>
+      <material name="">
+        <color rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/upperArm_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- upperArm_Joint -->
+
+  <joint name="upperArm_joint" type="revolute">
+    <origin xyz="0 0.2013 0" rpy="-1.5708 -1.5708 0" />
+    <parent link="shoulder_Link" />
+    <child link="upperArm_Link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.05" upper="3.05" effort="100000" velocity="3.15" />
+  </joint>
+
+  <!-- foreArm_Link -->
+
+  <link name="foreArm_Link">
+    <inertial>
+      <origin xyz="0.24431 6.6794E-06 0.12549" rpy="0 0 0" />
+      <mass value="3.1022" />
+      <inertia ixx="0.0027288" ixy="-6.2713E-06" ixz="-0.0018082" iyy="0.097825" iyz="3.5731E-07" izz="0.097866" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/foreArm_Link.DAE" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/foreArm_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- foreArm_Joint -->
+
+  <joint name="foreArm_joint" type="revolute">
+    <origin xyz="0.647 0 0" rpy="3.1416 -4.5954E-17 -8.4328E-17" />
+    <parent link="upperArm_Link" />
+    <child link="foreArm_Link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.05" upper="3.05" effort="100000" velocity="3.15" />
+  </joint>
+
+  <!-- wrist1_Link -->
+
+  <link name="wrist1_Link">
+    <inertial>
+      <origin xyz="5.2305E-07 0.00026581 -0.0027894" rpy="0 0 0" />
+      <mass value="0.57981" />
+      <inertia ixx="0.00088336" ixy="-6.425E-09" ixz="5.1594E-09" iyy="0.00046118" iyz="-1.0734E-06" izz="0.00085336" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/wrist1_Link.DAE" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/wrist1_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- wrist1_Joint -->
+
+  <joint name="wrist1_joint" type="revolute">
+    <origin xyz="0.6005 0 0" rpy="-3.1416 -1.4294E-15 1.5708" />
+    <parent link="foreArm_Link" />
+    <child link="wrist1_Link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.05" upper="3.05" effort="100000" velocity="3.15" />
+  </joint>
+
+  <!-- wrist2_Link -->
+
+  <link name="wrist2_Link">
+    <inertial>
+      <origin xyz="-5.2305E-07 -0.00026581 -0.0027894" rpy="0 0 0" />
+      <mass value="0.57981" />
+      <inertia ixx="0.00088336" ixy="-6.4251E-09" ixz="-5.1594E-09" iyy="0.00046118" iyz="1.0734E-06" izz="0.00085336" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/wrist2_Link.DAE" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/wrist2_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- wrist2_Joint -->
+
+  <joint name="wrist2_joint" type="revolute">
+    <origin xyz="0 0.1025 0" rpy="-1.5708 -7.0777E-16 -7.4101E-16" />
+    <parent link="wrist1_Link" />
+    <child link="wrist2_Link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.05" upper="3.05" effort="100000" velocity="3.15" />
+  </joint>
+
+  <!-- wrist3_Link -->
+
+  <link name="wrist3_Link">
+    <inertial>
+      <origin xyz="-2.2127E-09 0.00023722 -0.018629" rpy="0 0 0" />
+      <mass value="0.13669" />
+      <inertia ixx="6.0946E-05" ixy="9.3663E-12" ixz="-1.3841E-12" iyy="5.9501E-05" iyz="1.9944E-07" izz="9.6981E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/wrist3_Link.DAE" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://paintingrobot2_description/meshes/aubo_i10/wrist3_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <!-- wrist3_Joint -->
+  <joint name="wrist3_joint" type="revolute">
+    <origin xyz="0 -0.094 0" rpy="1.5708 0 6.7283E-16" />
+    <parent link="wrist2_Link" />
+    <child link="wrist3_Link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.05" upper="3.05" effort="100000" velocity="3.15" />
+  </joint>
+
+
+  <!--////////////////////////////////// Transmissions for ROS Control //////////////////////////-->
+  <xacro:macro name="aubo_arm_transmission" params="joint_name">
+      <transmission name="${joint_name}_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="${joint_name}">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="${joint_name}_motor">
+          <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+      </transmission>
+  </xacro:macro>
+
+  <xacro:macro name="wheel_transmission" params="joint_name">
+      <transmission name="${joint_name}_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="${joint_name}">
+          <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="${joint_name}_motor">
+          <mechanicalReduction>0</mechanicalReduction>
+        </actuator>
+      </transmission>
+  </xacro:macro>
+
+  <xacro:aubo_arm_transmission joint_name="shoulder_joint"/>
+  <xacro:aubo_arm_transmission joint_name="upperArm_joint"/>
+  <xacro:aubo_arm_transmission joint_name="foreArm_joint"/>
+  <xacro:aubo_arm_transmission joint_name="wrist1_joint"/>
+  <xacro:aubo_arm_transmission joint_name="wrist2_joint"/>
+  <xacro:aubo_arm_transmission joint_name="wrist3_joint"/>
+  <xacro:wheel_transmission joint_name="wheel_front_left_joint"/>
+  <xacro:wheel_transmission joint_name="wheel_front_right_joint"/>
+  <xacro:wheel_transmission joint_name="wheel_back_left_joint"/>
+  <xacro:wheel_transmission joint_name="wheel_back_right_joint"/>
+
+
+  <!-- the end effector is shown as follows:-->
+ 
+  <link name="endeffector_link">
+  <inertial>
+    <origin xyz="-2.2127E-09 0.00023722 -0.018629" rpy="0 0 0" />
+    <mass value="0.13669" />
+    <inertia ixx="6.0946E-05" ixy="9.3663E-12" ixz="-1.3841E-12" iyy="5.9501E-05" iyz="1.9944E-07" izz="9.6981E-05" />
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh filename="package://paintingrobot2_description/meshes/paintingendeffector.STL" />
+    </geometry>
+    <material name="">
+      <color rgba="1 1 1 1" />
+    </material>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh filename="package://paintingrobot2_description/meshes/paintingendeffector.STL" />
+    </geometry>
+  </collision>
+</link>
+
+<joint name="endeffctor_joint" type="fixed">
+  <origin xyz="-0.044 -0.037  0.0" rpy="0 0 0" />
+  <parent link="wrist3_Link" />
+  <child link="endeffector_link" />
+  <axis xyz="0 0 0" />
+</joint>
+
+<!--Stereo Camera Joint-->
+<joint name="stereo_joint" type="fixed">
+  <parent link="${zed_base_parent}"/>
+  <child link="base_stereo"/>
+  <origin xyz="${zed_offset_x} ${zed_offset_y} ${zed_offset_z}" 
+          rpy="${zed_offset_roll} ${zed_offset_pitch} ${zed_offset_yaw}"/>
+</joint>
+<link name="base_stereo">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://paintingrobot2_description/meshes/sensors/ZED.stl" />
+    </geometry>
+    <material name="dark"/>
+  </visual>
+  <xacro:cuboid_inertial length="0.16" weight="0.04" hight="0.04" mass="0.00000001">
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+  </xacro:cuboid_inertial>
+</link>
+
+<xacro:stereo_camera_v0 parent="base_stereo" name="stereo" focal_length="320.030826" hfov="90" image_width="640" image_height="480" >
+    <origin xyz="0 0 0.0" rpy="0.0   0.0   0.0" />
+</xacro:stereo_camera_v0>
+
+
+<!--Livox-->
+<joint name="livox_joint" type="fixed">
+  <parent link="shoulder_Link"/>
+  <child link="livox_base"/>
+  <origin xyz="0 0 0.13" 
+          rpy="0 0 3.1415926"/>
+</joint>
+<xacro:Livox_Mid70 name="livox"/>
+
+</robot>
